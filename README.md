@@ -3,9 +3,7 @@
 言語レベルでのマルコフ連鎖を簡単に体験できるPythonライブラリです。  
 URLを指定するだけでWebページのテキストを学習し、マルコフ連鎖による文章を生成します。
 
-- **日本語対応**: janome による形態素解析で高精度な日本語学習
-- **JavaScript対応**: playwright により、Twitter/X・YouTubeなどのJSサイトにも対応
-- **階層制限**: 同じ階層のリンクのみを学習対象とし、膨大なデータの取り込みを防止
+日本語、JavaScriptのWebページに対応しており、同じ階層のみを学習します。
 
 ---
 
@@ -29,27 +27,29 @@ playwright install chromium
 ```python
 import markov
 
-# URLからテキストを学習する（同じ階層のリンクのみ対象）
-markov.learn.add("https://www.asahi.com/")
-markov.learn.add("https://en.wikipedia.org/wiki/Markov_chain")
+# URLからテキストを学習する
+markov.learn.add("https://example.com")
+markov.learn.add("https://example.com/example")
 
-# 変数にURLを入れて渡すことも可能
+## 変数にURLを入れて渡すことも可能
 url = "https://example.com"
 markov.learn.add(url)
 
-# 文章を生成する（括弧なし）
+# 文章を生成する
 print(markov.output)
 
 # 変数に代入することも可能
 x = markov.output
 print(x)
 
-# 学習データをリセットする（括弧なし）
+# 学習データをリセットする
 markov.learn.reset
 
-# 設定変更（任意）
-markov.config.max = 150  # 最大単語数（デフォルト: 100）
-markov.config.min = 20   # 最小単語数（デフォルト: 10）
+# 設定変更
+## 最大単語数 デフォルト：100
+markov.config.max = 150
+## 最小単語数 デフォルト：10
+markov.config.min = 20
 ```
 
 ---
@@ -71,14 +71,13 @@ markov.learn.add(12345)
 ## アップデート履歴
 
 ### 1.0.0
-- 初回リリース
-- URLからのテキスト学習（`markov.learn.add`）
-- マルコフ連鎖による文章生成（`markov.output`）
-- 学習データリセット（`markov.learn.reset`）
-- 日本語形態素解析（janome）対応
-- JavaScriptサイト対応（playwright）
+- URLからのテキスト学習
+- マルコフ連鎖による文章生成
+- 学習データリセット
+- 日本語対応
+- JavaScriptサイト対応
 - 繰り返しループ抑制機能
-- 最大・最小単語数の設定（`markov.config`）
+- 最大・最小単語数の設定
 
 ---
 
