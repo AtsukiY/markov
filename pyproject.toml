@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "markov"
-version = "1.0.0"
+version = "1.1.0"
 description = "言語レベルでマルコフ連鎖を簡単に体験できるライブラリ。URLを指定するだけで学習・文章生成が可能。"
 readme = "README.md"
 license = { text = "MIT" }
