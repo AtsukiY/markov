@@ -239,6 +239,23 @@ class MarkovCore:
         text = _extract_text(html)
         self._learn_text(text)
 
+    def learn_file(self, path: str) -> None:
+        """
+        指定されたパスのテキストファイルを学習する。
+        """
+        import os
+        # ~ (ホームディレクトリ) を展開
+        full_path = os.path.expanduser(path)
+        if not os.path.exists(full_path):
+            raise FileNotFoundError(f"ファイルが見つかりません: {full_path}")
+        
+        try:
+            with open(full_path, 'r', encoding='utf-8', errors='ignore') as f:
+                text = f.read()
+            self._learn_text(text)
+        except Exception as e:
+            raise ValueError(f"ファイルの読み込み中にエラーが発生しました: {full_path} ({e})")
+
     def _learn_text(self, text: str) -> None:
         """テキストをトークナイズしてマルコフ連鎖に追加する。"""
         tokens = _tokenize(text)
