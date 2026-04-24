@@ -12,7 +12,7 @@ URLを指定するだけでWebページのテキストを学習し、マルコ�
 ## インストール
 
 ```bash
-pip install markov-learning
+pip install git+https://github.com/AtsukiY/markov.git
 ```
 
 JavaScriptで構成されたサイト（Twitter/X、YouTubeなど）から学習する場合は、
