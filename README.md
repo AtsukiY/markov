@@ -16,11 +16,7 @@ python -m pip install git+https://github.com/AtsukiY/markov.git
 ```
 
 JavaScriptで構成されたサイト（Twitter/X、YouTubeなど）から学習する場合は、
-初回のみ以下のコマンドでブラウザのインストールが必要です。
-
-```bash
-playwright install chromium
-```
+初回のみ、自動インストールが行われるため、時間がかかります。
 
 ---
 
