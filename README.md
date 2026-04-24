@@ -80,6 +80,7 @@ markov.learn.add(12345)
 ### 1.0.0
 - 初回リリース
 - URLからのテキスト学習（`markov.learn.add`）
+- テキストファイルからのテキスト学習(`markov.learn.add`)
 - マルコフ連鎖による文章生成（`markov.output`）
 - 学習データリセット（`markov.learn.reset`）
 - 日本語形態素解析（janome）対応
