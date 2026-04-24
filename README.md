@@ -83,8 +83,8 @@ markov.learn.add(12345)
 - テキストファイルからのテキスト学習(`markov.learn.add`)
 - マルコフ連鎖による文章生成（`markov.output`）
 - 学習データリセット（`markov.learn.reset`）
-- 日本語形態素解析（janome）対応
-- JavaScriptサイト対応（playwright）
+- 日本語形態素解析対応
+- JavaScriptサイト対応
 - 繰り返しループ抑制機能
 - 最大・最小単語数の設定（`markov.config`）
 
