@@ -8,8 +8,6 @@ JavaScriptで構成されたサイトは playwright によるフォールバッ�
 
 import random
 import re
-import subprocess
-import sys
 from collections import defaultdict
 from urllib.parse import urljoin, urlparse
 
@@ -106,15 +104,14 @@ def _fetch_html_simple(url: str) -> str:
 def _fetch_html_playwright(url: str) -> str:
     """
     playwright でブラウザを起動し、JavaScriptをレンダリングしてHTMLを取得する。
-    Chromium が無い場合は自動的にインストールを試みる。
+    playwright / Chromium が未インストールの場合は ValueError を raise する。
     """
     if not _PLAYWRIGHT_AVAILABLE:
         raise ValueError(
-            "playwright パッケージがインストールされていません。"
-            "先に `pip install playwright` を実行してください。"
+            "playwright がインストールされていません。"
+            "`pip install playwright` の後に `playwright install chromium` を実行してください。"
         )
-
-    def _run_fetch():
+    try:
         with sync_playwright() as p:
             browser = p.chromium.launch(headless=True)
             page = browser.new_page()
@@ -123,25 +120,8 @@ def _fetch_html_playwright(url: str) -> str:
             page.wait_for_timeout(2000)
             html = page.content()
             browser.close()
-            return html
-
-    try:
-        return _run_fetch()
+        return html
     except Exception as e:
-        # ブラウザ実行ファイルが見つからない際のエラーメッセージを確認
-        error_str = str(e)
-        if "Executable doesn't exist" in error_str or "playwright install" in error_str.lower():
-            print("Playwright Chromiumが見つかりません。自動インストールを開始します...")
-            try:
-                subprocess.run(
-                    [sys.executable, "-m", "playwright", "install", "chromium"],
-                    check=True
-                )
-                # インストール後に再試行
-                return _run_fetch()
-            except subprocess.CalledProcessError as install_err:
-                raise ValueError(f"Playwrightの自動インストールに失敗しました: {install_err}")
-        
         raise ValueError(f"playwright によるページ取得に失敗しました: {url} ({e})")
 
 
@@ -241,20 +221,42 @@ class MarkovCore:
 
     def learn_file(self, path: str) -> None:
         """
-        指定されたパスのテキストファイルを学習する。
+        テキストファイルをマルコフ連鎖として学習する。
+        utf-8 / shift_jis / cp932 を自動的に試みて読み込む。
+
+        Args:
+            path (str): テキストファイルのパス（相対・絶対どちらも可）
+
+        Raises:
+            FileNotFoundError: ファイルが存在しない場合
+            ValueError: ファイルを読み込めない場合
         """
         import os
-        # ~ (ホームディレクトリ) を展開
-        full_path = os.path.expanduser(path)
-        if not os.path.exists(full_path):
-            raise FileNotFoundError(f"ファイルが見つかりません: {full_path}")
-        
-        try:
-            with open(full_path, 'r', encoding='utf-8', errors='ignore') as f:
-                text = f.read()
-            self._learn_text(text)
-        except Exception as e:
-            raise ValueError(f"ファイルの読み込み中にエラーが発生しました: {full_path} ({e})")
+
+        # パスを絶対パスに展開（~ も展開）
+        path = os.path.expanduser(path)
+        path = os.path.abspath(path)
+
+        if not os.path.exists(path):
+            raise FileNotFoundError(f"ファイルが見つかりません: {path}")
+        if not os.path.isfile(path):
+            raise ValueError(f"指定したパスはファイルではありません: {path}")
+
+        # 文字コードを順番に試して読み込む
+        encodings = ['utf-8', 'utf-8-sig', 'shift_jis', 'cp932', 'euc_jp', 'latin-1']
+        text = None
+        for enc in encodings:
+            try:
+                with open(path, 'r', encoding=enc) as f:
+                    text = f.read()
+                break
+            except (UnicodeDecodeError, LookupError):
+                continue
+
+        if text is None:
+            raise ValueError(f"ファイルの文字コードを判別できませんでした: {path}")
+
+        self._learn_text(text)
 
     def _learn_text(self, text: str) -> None:
         """テキストをトークナイズしてマルコフ連鎖に追加する。"""
